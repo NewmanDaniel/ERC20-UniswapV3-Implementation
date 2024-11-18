@@ -2,8 +2,8 @@
 This is a test implementation for setting up a simple ERC-20 token called SashaPup, and making it swappable for Eth on Uniswap V3 via a frontend interface on the Ethereum Sepolia network. Once implemented, the user can use their Metamask wallet to purchase SashaPup via a Uniswap V3 liquidity pool.
 
 # set up nvm & install dependencies
-nvm use --lts
-npm install
+`nvm use --lts`
+`npm install`
 
 # Set up config files.
 copy config.js.example & .env.example to config.js and .env, and fill out the variables as you go along
@@ -11,14 +11,16 @@ copy config.js.example & .env.example to config.js and .env, and fill out the va
 *Please ensure your infura URL is entered in properly to .env*
 
 # Deploy the contract
-npx hardhat compile
-npx hardhat run scripts/deploy.js --network sepolia
+`npx hardhat compile`
+`npx hardhat run scripts/deploy.js --network sepolia`
 
 Please save the contract address in the config.js file.
 
 # Set up liquidity pool.
+Before starting, ensure your metamask wallet is set to the sepolia testnet.
+
 1) Navigate to https://app.uniswap.org/ and connect your metamask.
-2) Under the settings gear, click Testnet and make sure it's enabled. (you may need to set your metamask wallet back to sepolia if it's glitching out)
+2) Under the settings gear, click Testnet and make sure it's enabled. (you may need to set your metamask wallet back to sepolia if it's glitching out.)
 3) Click Pool
 4) Click New Position
 5) Click Select token, and under the search bar enter the SashaPup contract address
@@ -47,7 +49,7 @@ Then confirm with your metamask. You should hopefully be able to successfully cr
 
 # How to serve the frontend test
 1) run command: `npm install -g http-server`
-2) run the command http-server in your terminal in the repo root.
+2) run the command `http-server` in your terminal in the repo root.
 3) in your browser go to http://127.0.0.1:8080/purchase_spup_frontend.html
 
 # Purchase SashaPup!
