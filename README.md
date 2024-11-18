@@ -13,6 +13,7 @@ copy config.js.example & .env.example to config.js and .env, and fill out the va
 
 # Deploy the contract
 `npx hardhat compile`
+
 `npx hardhat run scripts/deploy.js --network sepolia`
 
 Please save the contract address in the config.js file.
