@@ -1,11 +1,11 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 require("dotenv").config();
-const CONFIG = require('../config.js');
+const CONFIG = require("../config.js");
 const {
   abi: SWAP_ROUTER_ABI,
   bytecode: SWAP_ROUTER_BYTECODE,
-} = require('@uniswap/swap-router-contracts/artifacts/contracts/SwapRouter02.sol/SwapRouter02.json');
+} = require("@uniswap/swap-router-contracts/artifacts/contracts/SwapRouter02.sol/SwapRouter02.json");
 const swapRouterAddress = CONFIG.swapRouterAddress;
 const SPUP_ADDRESS = CONFIG.SPUP_ADDRESS;
 
@@ -21,14 +21,14 @@ describe("Swap ETH for SashaPup Tokens", function () {
     swapRouter = await ethers.getContractAt(
       SWAP_ROUTER_ABI,
       CONFIG.swapRouterAddress,
-      owner
+      owner,
     );
 
     // Instantiate the SashaPup Token contract
     sashaPupToken = await ethers.getContractAt(
       "IERC20",
       CONFIG.SPUP_ADDRESS,
-      owner
+      owner,
     );
   });
 
@@ -56,7 +56,7 @@ describe("Swap ETH for SashaPup Tokens", function () {
       const spupBalance = await sashaPupToken.balanceOf(owner.address);
 
       console.log(
-        `Received SPUP tokens: ${ethers.formatUnits(spupBalance, 18)}`
+        `Received SPUP tokens: ${ethers.formatUnits(spupBalance, 18)}`,
       );
 
       // Assert that we have received the coins successfully by checking that the balance is greater than zero.
@@ -67,3 +67,4 @@ describe("Swap ETH for SashaPup Tokens", function () {
     }
   });
 });
+
