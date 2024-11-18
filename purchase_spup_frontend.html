@@ -8,7 +8,8 @@
     <!-- Include the config file -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
     <style>
-      #conversion-rate, #eth-amount-display {
+      #conversion-rate,
+      #eth-amount-display {
         color: grey;
         margin-bottom: 10px;
       }
@@ -56,7 +57,11 @@
 
           // Create a contract instance
           const provider = new ethers.BrowserProvider(window.ethereum);
-          const poolContract = new ethers.Contract(poolAddress, poolABI, provider);
+          const poolContract = new ethers.Contract(
+            poolAddress,
+            poolABI,
+            provider,
+          );
 
           // Fetch the pool's slot0 data
           const slot0 = await poolContract.slot0();
@@ -84,16 +89,23 @@
         if (ethToSashaPupRate) {
           conversionRateDiv.textContent = `1 SashaPup = ${ethToSashaPupRate.toFixed(6)} ETH`;
         } else {
-          conversionRateDiv.textContent = "Failed to fetch conversion rate. Please try again later.";
+          conversionRateDiv.textContent =
+            "Failed to fetch conversion rate. Please try again later.";
         }
       }
 
       function updateEthEquivalent() {
         const amountOutDesired = parseFloat(amountInput.value);
-        if (isNaN(amountOutDesired) || amountOutDesired <= 0 || !ethToSashaPupRate) {
+        if (
+          isNaN(amountOutDesired) ||
+          amountOutDesired <= 0 ||
+          !ethToSashaPupRate
+        ) {
           ethAmountDisplay.textContent = "ETH required for SashaPup: 0.0";
         } else {
-          const ethEquivalent = (amountOutDesired * ethToSashaPupRate).toFixed(6);
+          const ethEquivalent = (amountOutDesired * ethToSashaPupRate).toFixed(
+            6,
+          );
           ethAmountDisplay.textContent = `ETH requiredForSashaPup: ${ethEquivalent}`;
         }
       }
@@ -156,7 +168,6 @@
             value: amountInWei,
             gasLimit: ethers.parseUnits("30000000", "wei"),
           });
-
 
           await tx.wait();
 
