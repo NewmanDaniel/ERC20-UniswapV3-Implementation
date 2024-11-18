@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buy SashaPup</title>
+    <script src="./config.js"></script>
+    <!-- Include the config file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
+    <style>
+      #conversion-rate, #eth-amount-display {
+        color: grey;
+        margin-bottom: 10px;
+      }
+      #eth-amount-display {
+        border: 1px solid lightgrey;
+        padding: 5px;
+        background-color: #f9f9f9;
+        font-size: 14px;
+        width: fit-content;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="./sasha.jpg" width="360" />
+    <br />
+    <div id="conversion-rate">Fetching conversion rate...</div>
+    <label for="amount">Enter amount of SashaPup to purchase:</label>
+    <input
+      type="number"
+      id="amount"
+      name="amount"
+      min="0"
+      step="any"
+      placeholder="0.0"
+    />
+    <div id="eth-amount-display">ETH required for SashaPup: 0.0</div>
+    <button id="buy-button">Buy SashaPup</button>
+
+    <script>
+      const conversionRateDiv = document.getElementById("conversion-rate");
+      const amountInput = document.getElementById("amount");
+      const ethAmountDisplay = document.getElementById("eth-amount-display");
+      const buyButton = document.getElementById("buy-button");
+
+      let ethToSashaPupRate = null;
+
+      async function fetchConversionRate() {
+        try {
+          console.log("Fetching conversion rate...");
+          // Define the Uniswap V3 pool address and ABI
+          const poolAddress = CONFIG.POOL_ADDRESS; // Replace with your pool's address
+          const poolABI = [
+            "function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)",
+          ];
+
+          // Create a contract instance
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const poolContract = new ethers.Contract(poolAddress, poolABI, provider);
+
+          // Fetch the pool's slot0 data
+          const slot0 = await poolContract.slot0();
+          const sqrtPriceX96 = slot0[0];
+
+          // Calculate the price of SPUP in terms of WETH
+          const sqrtPriceX96BigInt = BigInt(sqrtPriceX96);
+          const numerator = sqrtPriceX96BigInt ** BigInt(2); // Scaled square of price
+          const denominator = BigInt(2) ** BigInt(192);
+
+          // Scale the result to prevent truncation
+          const scaledNumerator = numerator * BigInt(1e18); // Scale up to avoid losing precision
+          const priceInWETH = Number(scaledNumerator / denominator) / 1e18; // Scale back down for readability
+
+          console.log(`1 SPUP = ${priceInWETH} WETH`);
+          return priceInWETH;
+        } catch (err) {
+          console.error("Error fetching SPUP price:", err);
+          return null;
+        }
+      }
+
+      async function updateConversionRate() {
+        ethToSashaPupRate = await fetchConversionRate();
+        if (ethToSashaPupRate) {
+          conversionRateDiv.textContent = `1 SashaPup = ${ethToSashaPupRate.toFixed(6)} ETH`;
+        } else {
+          conversionRateDiv.textContent = "Failed to fetch conversion rate. Please try again later.";
+        }
+      }
+
+      function updateEthEquivalent() {
+        const amountOutDesired = parseFloat(amountInput.value);
+        if (isNaN(amountOutDesired) || amountOutDesired <= 0 || !ethToSashaPupRate) {
+          ethAmountDisplay.textContent = "ETH required for SashaPup: 0.0";
+        } else {
+          const ethEquivalent = (amountOutDesired * ethToSashaPupRate).toFixed(6);
+          ethAmountDisplay.textContent = `ETH requiredForSashaPup: ${ethEquivalent}`;
+        }
+      }
+
+      buyButton.onclick = async () => {
+        const amountOutDesired = parseFloat(amountInput.value);
+
+        if (isNaN(amountOutDesired) || amountOutDesired <= 0) {
+          alert("Please enter a valid amount of SashaPup to purchase.");
+          return;
+        }
+
+        if (typeof window.ethereum === "undefined") {
+          alert("MetaMask not detected! Please install MetaMask.");
+          return;
+        }
+
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+
+        const swapRouterAddress = CONFIG.swapRouterAddress; // Uniswap V3 Router address
+        const SPUP_ADDRESS = CONFIG.SPUP_ADDRESS; // SashaPup token address
+
+        const swapRouterABI = [
+          "function exactInputSingle((address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 amountIn, uint256 amountOutMinimum, uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)",
+        ];
+
+        const swapRouter = new ethers.Contract(
+          swapRouterAddress,
+          swapRouterABI,
+          signer,
+        );
+
+        try {
+          await provider.send("eth_requestAccounts", []);
+
+          // Fetch ETH to SashaPup conversion rate
+          if (!ethToSashaPupRate) {
+            alert("Failed to fetch conversion rate. Please try again later.");
+            return;
+          }
+
+          const amountInEth = amountOutDesired * ethToSashaPupRate;
+          const amountInWei = ethers.parseEther(amountInEth.toString());
+
+          const params = {
+            tokenIn: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14", // Am i supposed to use WETH here instead of native eth?
+            tokenOut: SPUP_ADDRESS,
+            fee: 3000, // Fee tier (0.3%)
+            recipient: await signer.getAddress(),
+            amountIn: amountInWei,
+            //amountOutMinimum: ethers.parseUnits( amountOutDesired.toString(), 18,),
+            amountOutMinimum: 98,
+            sqrtPriceLimitX96: 0,
+          };
+
+          console.log("Transaction parameters:", params);
+
+          const tx = await swapRouter.exactInputSingle(params, {
+            value: amountInWei,
+            gasLimit: ethers.parseUnits("30000000", "wei"),
+          });
+
+
+          await tx.wait();
+
+          alert(`Successfully purchased ${amountOutDesired} SashaPup!`);
+        } catch (err) {
+          if (err.code === "CALL_EXCEPTION") {
+            alert(
+              "Transaction failed: Execution reverted. Ensure liquidity exists and parameters are correct.",
+            );
+          } else {
+            alert(`Transaction failed! Error: ${err.message}`);
+          }
+          console.error("Transaction failed:", err);
+        }
+      };
+
+      // Initialize
+      updateConversionRate();
+      amountInput.addEventListener("input", updateEthEquivalent);
+    </script>
+  </body>
+</html>
+

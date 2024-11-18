@@ -1,0 +1,6 @@
+// config.js
+const CONFIG = {
+  swapRouterAddress: "0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E", // Replace with the Uniswap V3 Router address on Sepolia
+  SPUP_ADDRESS: "0x2a0420D95f5aAbF6c7aD9b9d8fc421565e75e665",    // Replace with the SashaPup contract token address on Sepolia
+  POOL_ADDRESS: "0xBb29f233B476169440132f546AF5133f0A8a9B31"    // Replace with the Uniswap Liquidity Pool address that pairs eth to SashaPup on Sepolia
+};
