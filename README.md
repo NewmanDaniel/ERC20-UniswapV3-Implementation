@@ -3,6 +3,7 @@ This is a test implementation for setting up a simple ERC-20 token called SashaP
 
 # set up nvm & install dependencies
 `nvm use --lts`
+
 `npm install`
 
 # Set up config files.
