@@ -152,7 +152,7 @@
           const amountInWei = ethers.parseEther(amountInEth.toString());
 
           const params = {
-            tokenIn: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14", // Am i supposed to use WETH here instead of native eth?
+            tokenIn: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14", // Sepolia WETH contract address
             tokenOut: SPUP_ADDRESS,
             fee: 3000, // Fee tier (0.3%)
             recipient: await signer.getAddress(),

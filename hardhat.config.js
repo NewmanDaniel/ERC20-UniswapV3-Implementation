@@ -8,6 +8,11 @@ module.exports = {
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL, // Fetch from .env
       accounts: [process.env.PRIVATE_KEY], // Fetch from .env
-    }
+    },
+    hardhat: {
+      forking: {
+        url: process.env.SEPOLIA_RPC_URL,
+      },
+    },
   }
 };
