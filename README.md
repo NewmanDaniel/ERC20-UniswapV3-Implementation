@@ -38,14 +38,21 @@ Then confirm with your metamask. You should hopefully be able to successfully cr
 1) Navigate to https://sepolia.etherscan.io/address/0x0227628f3F023bb0B980b67D528571c95c6DaC1c#readContract
 2)
     Enter 0xfff9976782d46cc05630d1f6ebab18b2324d6b14 for first input address (This is the WETH contract address for Sepolia)
+  
     Enter the SashaPup contract you noted down Address for Address 2
+  
     Enter 3000 for input 3 (This represents the 0.3% fee for the pool, please use a different value if you entered in something different)
-3) Click Query, and the pool address will be computed. Please save it in config.js, It's needed for the web frontend to work
+  
+4) Click Query, and the pool address will be computed. Please save it in config.js, It's needed for the web frontend to work
 
 # How to serve the frontend test
-1) run command: npm install -g http-server
+1) run command: `npm install -g http-server`
 2) run the command http-server in your terminal in the repo root.
 3) in your browser go to http://127.0.0.1:8080/purchase_spup_frontend.html
 
 # Purchase SashaPup!
 Enter how much SashaPup you want to purchase. The current SashaPup/ETH exchange rate and number of required eth for purchase will be displayed. Click Buy SashaPup. You will be prompted to confirm the purchase on Metamask. It'll take a couple minutes, then it should hopefully work and you'll have some brand new SashaPups!
+
+# Run Tests
+In the repo root, run the command `npx hardhat test`. 
+This will run a Suite of tests. One test, labeled _Swap ETH for SashaPup Tokens_, tests the payload emitted by the front-end that enables the user to purchase SashaPup from the eth-SashaPup UniswapV3 LP.
