@@ -1,6 +1,8 @@
 # What is this?
 This is a test implementation for setting up a simple ERC-20 token called SashaPup, and making it swappable for Eth on Uniswap V3 via a frontend interface on the Ethereum Sepolia network. Once implemented, the user can use their Metamask wallet to purchase SashaPup via a Uniswap V3 liquidity pool.
 
+This project was created for a job interview, and we confirmed the project was completed successfully. I welcome any feedback on this solution and happy to help anyone that lands on this page with their understanding.
+
 # set up nvm & install dependencies
 `nvm use --lts`
 
